@@ -7,10 +7,28 @@ var salesFiles = FindFiles(storesDirectory);
 var salesTotal = CalculateSalesTotal(salesFiles);
 
 var salesTotalDir = Path.Combine(currentDirectory, "salesTotalDir");
-Directory.CreateDirectory(salesTotalDir);
+bool doesDirectoryExist = Directory.Exists(salesTotalDir);
 
-File.AppendAllText(Path.Combine(salesTotalDir, "totals.txt"), $"{salesTotal}{Environment.NewLine}");
+if (!doesDirectoryExist){
+    try{
+        Console.WriteLine("Creating salesTotalDir directory");
+        Directory.CreateDirectory(salesTotalDir);
+        Console.WriteLine($"Writing to salesTotalDir{Path.DirectorySeparatorChar}totals.txt");
+        File.WriteAllText(Path.Combine(salesTotalDir, "totals.txt"), $"{salesTotal}{Environment.NewLine}");
+    }catch(Exception ex){
+        Console.WriteLine($"Failed to create directory or file: {ex.Message}");
+    }
 
+}else{
+    try{
+        Console.WriteLine("SalesTotalDir directory already exists");
+        Console.WriteLine($"Writing to salesTotalDir{Path.DirectorySeparatorChar}totals.txt");
+        File.AppendAllText(Path.Combine(salesTotalDir, "totals.txt"), $"{salesTotal}{Environment.NewLine}");
+    }
+    catch(Exception ex){
+        Console.WriteLine($"Failed to add to directory or file: {ex.Message}");
+    }
+}
 
 
 IEnumerable<string> FindFiles(string folderName)
@@ -54,10 +72,10 @@ double CalculateSalesTotal(IEnumerable<string> salesFiles)
 record SalesData (double Total);
 
 
+// Directory.EnumerateDirectories and Directory.EnumerateFiles accept a parameter that allows you to specify a search condition for names to return, and a parameter to recursively traverse all child directories.
+// System.Environment.SpecialFolder is an enumeration that lets you access system-defined folders, such as the desktop or user profile, in a cross-platform manner without having to memorize the exact path for each operating system.
+// If you need to parse other file types, check out the packages on nuget.org. For example, you can use the CsvHelper package for .csv files.
 
-// bool doesDirectoryExist = Directory.Exists(filePath);
-
-// File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "greeting.txt"), "Hello World!");
 
 // // Path builds and parses strings
 // Console.WriteLine($"stores{Path.DirectorySeparatorChar}201");
