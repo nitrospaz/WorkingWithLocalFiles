@@ -1,13 +1,17 @@
-﻿var currentDirectory = Directory.GetCurrentDirectory();
+﻿using Newtonsoft.Json;
 
+var currentDirectory = Directory.GetCurrentDirectory();
 var storesDirectory = Path.Combine(currentDirectory, "stores");
 
 var salesFiles = FindFiles(storesDirectory);
+var salesTotal = CalculateSalesTotal(salesFiles);
 
-foreach (var file in salesFiles)
-{
-    Console.WriteLine(file);
-}
+var salesTotalDir = Path.Combine(currentDirectory, "salesTotalDir");
+Directory.CreateDirectory(salesTotalDir);
+
+File.AppendAllText(Path.Combine(salesTotalDir, "totals.txt"), $"{salesTotal}{Environment.NewLine}");
+
+
 
 IEnumerable<string> FindFiles(string folderName)
 {
@@ -27,6 +31,33 @@ IEnumerable<string> FindFiles(string folderName)
     return salesFiles;
 }
 
+double CalculateSalesTotal(IEnumerable<string> salesFiles)
+{
+    double salesTotal = 0;
+
+    // Loop over each file path in salesFiles
+    foreach (var file in salesFiles)
+    {      
+        // Read the contents of the file
+        string salesJson = File.ReadAllText(file);
+
+        // Parse the contents as JSON
+        SalesData? data = JsonConvert.DeserializeObject<SalesData?>(salesJson);
+
+        // Add the amount found in the Total field to the salesTotal variable
+        salesTotal += data?.Total ?? 0;
+    }
+
+    return salesTotal;
+}
+
+record SalesData (double Total);
+
+
+
+// bool doesDirectoryExist = Directory.Exists(filePath);
+
+// File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "greeting.txt"), "Hello World!");
 
 // // Path builds and parses strings
 // Console.WriteLine($"stores{Path.DirectorySeparatorChar}201");
