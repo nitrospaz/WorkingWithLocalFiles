@@ -3,6 +3,14 @@
 var currentDirectory = Directory.GetCurrentDirectory();
 var storesDirectory = Path.Combine(currentDirectory, "stores");
 
+if (!Directory.Exists(storesDirectory))
+{
+    Console.WriteLine($"Stores directory not found, no files to process: {storesDirectory}");
+    Console.WriteLine("Press any key to exit...");
+    Console.ReadKey();
+    return;
+}
+
 var salesFiles = FindFiles(storesDirectory);
 var salesTotal = CalculateSalesTotal(salesFiles);
 
@@ -15,7 +23,9 @@ if (!doesDirectoryExist){
         Directory.CreateDirectory(salesTotalDir);
         Console.WriteLine($"Writing to salesTotalDir{Path.DirectorySeparatorChar}totals.txt");
         File.WriteAllText(Path.Combine(salesTotalDir, "totals.txt"), $"{salesTotal}{Environment.NewLine}");
-    }catch(Exception ex){
+        Console.WriteLine($"Created file: {Path.Combine(salesTotalDir, "totals.txt")}");
+    }
+    catch(Exception ex){
         Console.WriteLine($"Failed to create directory or file: {ex.Message}");
     }
 
@@ -24,12 +34,16 @@ if (!doesDirectoryExist){
         Console.WriteLine("SalesTotalDir directory already exists");
         Console.WriteLine($"Writing to salesTotalDir{Path.DirectorySeparatorChar}totals.txt");
         File.AppendAllText(Path.Combine(salesTotalDir, "totals.txt"), $"{salesTotal}{Environment.NewLine}");
+        Console.WriteLine($"Output file: {Path.Combine(salesTotalDir, "totals.txt")}");
     }
     catch(Exception ex){
         Console.WriteLine($"Failed to add to directory or file: {ex.Message}");
     }
 }
 
+Console.WriteLine("Press any key to exit...");
+Console.ReadKey();
+return;
 
 IEnumerable<string> FindFiles(string folderName)
 {
